@@ -22,18 +22,18 @@ class Camera:
         monitor = pyudev.Monitor.from_netlink(context)
         monitor.filter_by('block')
 
-        known_models = config.config.get("cameras", [])
+        known_serials = config.config.get("cameras", [])
 
-        logger.info(f"Waiting for USB camera. Known models: {known_models}")
+        logger.info(f"Waiting for USB camera. Known serials: {known_serials}")
 
         for device in iter(monitor.poll, None):
             if device.action == 'add' and device.get('ID_USB_DRIVER') == 'usb-storage':
-                model = device.get('ID_MODEL', '')
-                if model.lower() in [m.lower() for m in known_models]:
+                serial = device.get('ID_SERIAL_SHORT') or device.get('ID_SERIAL', '')
+                if serial in known_serials:
                     self.vendor = device.get('ID_VENDOR', 'Unknown')
-                    self.model = model
+                    self.model = device.get('ID_MODEL', 'Unknown')
                     self.device_node = device.device_node
-                    self.serial = device.get('ID_SERIAL_SHORT') or device.get('ID_SERIAL', 'Unknown')
+                    self.serial = serial
 
                     logger.info(f"Camera detected:")
                     logger.info(f"  Vendor: {self.vendor}")
