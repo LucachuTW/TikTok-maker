@@ -1,0 +1,290 @@
+{
+    "background_color": [
+        0.06666667014360428,
+        0.06666667014360428,
+        0.06666667014360428,
+        1
+    ],
+    "background_margin": 0,
+    "background_margin_feather": 0,
+    "background_mode": 0,
+    "calibration_data": {
+        "asymmetrical": false,
+        "calib_dimension": {
+            "h": 1080,
+            "w": 1920
+        },
+        "calibrated_by": "mark",
+        "calibrator_version": "1.0.0-rc5",
+        "camera_brand": "RunCam",
+        "camera_model": "3S",
+        "camera_setting": "",
+        "compatible_settings": [
+        ],
+        "crop": null,
+        "crop_factor": null,
+        "date": "2022-03-16",
+        "digital_lens": null,
+        "digital_lens_params": null,
+        "distortion_model": null,
+        "fisheye_params": {
+            "RMS_error": 0.28160570841835586,
+            "camera_matrix": [
+                [
+                    942.637663066276,
+                    0,
+                    946.1254254900526
+                ],
+                [
+                    0,
+                    943.306138365697,
+                    528.1850805322899
+                ],
+                [
+                    0,
+                    0,
+                    1
+                ]
+            ],
+            "distortion_coeffs": [
+                -0.0774513877956834,
+                0.0014920381684052466,
+                -0.000953213879290965,
+                -0.00022937842507152057
+            ],
+            "radial_distortion_limit": null
+        },
+        "focal_length": null,
+        "fps": 60,
+        "frame_readout_direction": null,
+        "frame_readout_time": null,
+        "global_shutter": false,
+        "gyro_lpf": null,
+        "identifier": "",
+        "input_horizontal_stretch": 1,
+        "input_vertical_stretch": 0,
+        "interpolations": null,
+        "lens_model": "Wide",
+        "name": "RunCam_3S_Wide__1080p_16by9_1920x1080-60.00fps",
+        "note": "",
+        "num_images": 15,
+        "official": false,
+        "orig_dimension": {
+            "h": 1080,
+            "w": 1920
+        },
+        "output_dimension": {
+            "h": 1080,
+            "w": 1920
+        },
+        "sync_settings": null
+    },
+    "gyro_source": {
+        "acc_rotation": null,
+        "gyro_bias": [
+            0,
+            0,
+            0
+        ],
+        "imu_orientation": "xYz",
+        "integration_method": 2,
+        "lpf": 70,
+        "rotation": null
+    },
+    "light_refraction_coefficient": 1,
+    "muted": false,
+    "name": "settings2",
+    "offsets": {
+        "107629855": -29.855824758589787,
+        "114824486": -41.15394405715044,
+        "115404383": -21.05015075136771,
+        "122656558": 1626.7749214562543,
+        "134288394": -2221.727243213166,
+        "141754326": -787.6598404470475,
+        "147155660": 1594.339972145795,
+        "14720506": -37.17335644572954,
+        "149204659": -1054.6599186700835,
+        "15302277": -18.944203955839438,
+        "158662660": -1012.6600268214129,
+        "163886992": 1546.3400686363636,
+        "165236992": -403.6599770897535,
+        "176917992": -2584.6599968810096,
+        "182199327": -82.66003429970425,
+        "183915326": -2398.6599942180706,
+        "188504327": 2512.3399545875386,
+        "198210660": 589.3397361578707,
+        "198879660": -679.6600664288848,
+        "206573659": 1126.3400504778137,
+        "213738992": 1144.3400647458097,
+        "230785326": 1381.340078759799,
+        "233107327": -1540.660045815574,
+        "240213326": 853.3402085723709,
+        "24211458": -28.12523243035752,
+        "247756659": 493.34056671851596,
+        "249728166": 2271.8333574177936,
+        "251443659": -2593.659763633811,
+        "260313660": -2563.6600910184884,
+        "262537992": 2395.3407127018772,
+        "265141993": 391.3396395151602,
+        "275175992": -742.6596493079566,
+        "281462326": 154.34029302254268,
+        "282473328": -256.6613221757301,
+        "290713327": 403.3397268847262,
+        "297098659": 1801.340216565255,
+        "299258660": -958.6600902676607,
+        "309445659": -1645.6598987970983,
+        "31404652": -37.98593810736545,
+        "316199992": -616.6599326244126,
+        "316835992": -1852.6599999999717,
+        "31985880": -19.213018587656606,
+        "324247993": 235.3397668279207,
+        "332562327": -295.6600149704878,
+        "333933326": -2266.6598563934117,
+        "340712327": 454.3398604586673,
+        "347418659": 931.340028469229,
+        "349119660": -169.66001895235223,
+        "358577659": -727.6596638790677,
+        "365061993": 571.3399410416476,
+        "365166992": -133.65985479549235,
+        "374562544": -29.21189153081513,
+        "384372672": -2056.005746594748,
+        "391245051": -28.38452186351864,
+        "400590217": -2190.2170167022928,
+        "400750636": -1750.6360927674211,
+        "40893211": -26.544397515275087,
+        "415120118": -36.78572220440788,
+        "415704186": -20.85330747155816,
+        "420025133": -25.133401991053496,
+        "425358292": -774.9598107389035,
+        "431346689": 1019.9774907043146,
+        "431798631": -31.964670704578364,
+        "441295809": -29.14255456630122,
+        "449071394": -21.394163497564875,
+        "450442767": -1992.7679724400832,
+        "457979161": -29.161612348149525,
+        "465166592": -33.25922141477052,
+        "465751186": -17.85390050251106,
+        "474661721": -28.388916565372632,
+        "48085755": -35.75552280677796,
+        "482436250": -19.583199635018637,
+        "48670607": -20.607332328513287,
+        "491344828": -28.16136918832118,
+        "498534827": -34.82780402831092,
+        "499119655": -19.65502425140901,
+        "57577593": -27.59350885749478,
+        "64768945": -35.61269578072866,
+        "65351595": -18.262722906062983,
+        "74260364": -27.031610826974276,
+        "7527815": -27.81571756923617,
+        "83004229": -987.5622095373278,
+        "84020000": -20.000279283561603,
+        "90949188": -32.521370822704405,
+        "98135181": -35.18151773554936,
+        "98720235": -20.235217939648248
+    },
+    "output": {
+        "audio": true,
+        "audio_codec": "AAC",
+        "bitrate": 29,
+        "codec": "H.265/HEVC",
+        "codec_options": "",
+        "encoder_options": "",
+        "export_trims_separately": false,
+        "interpolation": "Lanczos4",
+        "keyframe_distance": 1,
+        "metadata": {
+            "comment": ""
+        },
+        "output_filename": "",
+        "output_folder": "file:///home/lucas/camera/videos/",
+        "output_height": 1080,
+        "output_width": 1920,
+        "pad_with_black": false,
+        "preserve_other_tracks": false,
+        "use_gpu": true
+    },
+    "playback_speed": 1,
+    "stabilization": {
+        "adaptive_zoom_center_offset": [
+            -0.044800000000000006,
+            0.062400000000000004
+        ],
+        "adaptive_zoom_method": 1,
+        "adaptive_zoom_window": 4.389146812620734,
+        "additional_rotation": [
+            0,
+            0,
+            0
+        ],
+        "additional_translation": [
+            0,
+            0,
+            0
+        ],
+        "fov": 1,
+        "frame_readout_direction": "TopToBottom",
+        "frame_readout_time": 15.64,
+        "horizon_lock_amount": 0,
+        "horizon_lock_roll": 0,
+        "lens_correction_amount": 1,
+        "max_zoom": 138,
+        "max_zoom_iterations": 5,
+        "method": "Default",
+        "smoothing_params": [
+            {
+                "name": "smoothness",
+                "value": 0.615
+            },
+            {
+                "name": "smoothness_pitch",
+                "value": 0.5
+            },
+            {
+                "name": "smoothness_yaw",
+                "value": 0.5
+            },
+            {
+                "name": "smoothness_roll",
+                "value": 0.5
+            },
+            {
+                "name": "per_axis",
+                "value": 0
+            },
+            {
+                "name": "trim_range_only",
+                "value": 1
+            },
+            {
+                "name": "max_smoothness",
+                "value": 1
+            },
+            {
+                "name": "alpha_0_1s",
+                "value": 0.1
+            }
+        ],
+        "use_gravity_vectors": false,
+        "video_speed": 1,
+        "video_speed_affects_smoothing": true,
+        "video_speed_affects_zooming": true,
+        "video_speed_affects_zooming_limit": true
+    },
+    "synchronization": {
+        "auto_sync_points": true,
+        "calc_initial_fast": true,
+        "do_autosync": true,
+        "every_nth_frame": 1,
+        "initial_offset": 0,
+        "initial_offset_inv": true,
+        "max_sync_points": 5,
+        "of_method": 2,
+        "offset_method": 2,
+        "pose_method": 0,
+        "search_size": 2,
+        "time_per_syncpoint": 0.5
+    },
+    "trim_ranges_ms": [
+    ],
+    "version": 2
+}
