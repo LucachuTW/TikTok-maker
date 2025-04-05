@@ -99,10 +99,11 @@ class CSVManager:
 
         # Select magnitude based on kind
         if kind == 'acceleration':
-            ax = self.data["ax_g"]
-            magnitude = -ax  # invert for braking
-            ylabel = "Braking Force (-ax in g)"
-            threshold = -np.percentile(ax, 5)
+            magnitude = -((self.data["ax_g"] + self.data["ay_g"] + self.data["az_g"])/3.0)  # invert for braking
+            ylabel = "Braking Force (-a in g)"
+            # Use the 95th percentile as threshold
+            # In this case, we want to find the top 5% of braking forces
+            threshold = -np.percentile(-magnitude, 5)
         elif kind == 'rotation':
             magnitude = np.sqrt(
                 self.data["rx_deg"]**2 + self.data["ry_deg"]**2 + self.data["rz_deg"]**2
@@ -160,7 +161,7 @@ class CSVManager:
 if __name__ == "__main__":
     # Example usage
     path = config.config.get("camera_path", None)
-    path_file = os.path.join(path, "gcsv", "Runcam6_0002.gcsv")
+    path_file = os.path.join(path, "gcsv", "Runcam6_0003.gcsv")
     csv_manager = CSVManager(path_file)
     csv_manager.plot_csv()
     print(f"Nombre del video: {csv_manager.video_name}")
