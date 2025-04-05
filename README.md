@@ -3,6 +3,11 @@
 **Version:** 1.0 (ESEI Hackathon Version)
 **Authors:** [Javier Pérez Robles, Sergio González Rodríguez, Lucas González Fiz] - Students at ESEI, University of Vigo.
 
+### Usage
+
+'python main.py'
+
+
 ## 1. Introduction
 
 This document provides detailed documentation for the Automated Action Cam Video Processor, a Python project developed during the ESEI Hackathon. The primary goal of this project is to create an automated, end-to-end pipeline for processing footage from action cameras (like Runcam).
