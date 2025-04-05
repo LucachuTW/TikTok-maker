@@ -3,7 +3,7 @@ import logging
 import sys
 import os # Required for the SQLite handler
 from logging.handlers import RotatingFileHandler
-from sqlite_handler import SQLiteHandler # Import the new handler!
+from logger.sqlite_handler import SQLiteHandler # Import the new handler!
 
 class Logger:
     """
