@@ -4,6 +4,7 @@ from utils.camera import Camera
 
 config = ConfigManager()
 camera = Camera()
+camera.mount()
 print(camera.model)
 print(config.config)
 
