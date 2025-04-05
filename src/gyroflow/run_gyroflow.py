@@ -7,12 +7,11 @@ config = ConfigManager()
 def run_gyroflow(video_path: str):
     video_path = Path(video_path)
     video_name = video_path.stem
+    video_dir = video_path.parent  # ✅ Carpeta donde está el vídeo
 
-    camera_path = Path(config.config["camera_path"])
-    
     gyroflow_executable = Path(__file__).parent / "gyroflow"
-    settings_path = Path(__file__).parent / "settings2.gyroflow"
-    gyro_data_path = camera_path / f"{video_name}_synchronized.gcsv"
+    settings_path = Path(__file__).parent / "settings.gyroflow"
+    gyro_data_path = video_dir / f"{video_name}_synchronized.gcsv"  # ✅ en la misma carpeta del vídeo
 
     command = [
         str(gyroflow_executable),
@@ -21,7 +20,7 @@ def run_gyroflow(video_path: str):
         "-g",
         str(gyro_data_path)
     ]
-    print(command)
+    print("Running:", " ".join(command))
 
     try:
         subprocess.run(command, check=True)
