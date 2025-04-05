@@ -84,7 +84,7 @@ class CSVManager:
         plt.tight_layout()
         plt.show()
 
-    def detect_peaks(self, kind='acceleration', top_n=None, threshold=1.5, plot=True):
+    def detect_peaks(self, kind='acceleration', top_n=None, plot=True):
         """
         Detect the highest N peaks in acceleration or rotation magnitude.
 
@@ -99,14 +99,18 @@ class CSVManager:
             return []
 
         if kind == 'acceleration':
-            magnitude = np.sqrt(
-                self.data["ax_g"]**2 + self.data["ay_g"]**2 + self.data["az_g"]**2
-            )
-            ylabel = "Total Acceleration (g)"
+            # Detect braking: look for negative peaks in ax (longitudinal deceleration)
+            ax = self.data["ax_g"]
+            # Invert signal to find valleys (deceleration peaks)
+            magnitude = -ax
+            ylabel = "Braking Force (-ax in g)"
+            threshold = -np.percentile(self.data["ax_g"], 5)
         elif kind == 'rotation':
             magnitude = np.sqrt(
                 self.data["rx_deg"]**2 + self.data["ry_deg"]**2 + self.data["rz_deg"]**2
             )
+            threshold = np.percentile(magnitude, 95)
+            # Use 95th percentile to find significant rotation peaks
             ylabel = "Total Rotation (°/s)"
         else:
             raise ValueError("Kind must be 'acceleration' or 'rotation'.")
@@ -143,8 +147,9 @@ class CSVManager:
 if __name__ == "__main__":
     # Example usage
     path = config.config.get("camera_path", None)
-    path_file = os.path.join(path, "gcsv", "Runcam6_0002.gcsv")
+    path_file = os.path.join(path, "gcsv", "Runcam6_0001.gcsv")
     csv_manager = CSVManager(path_file)
     csv_manager.plot_csv()
     print(f"Nombre del video: {csv_manager.video_name}")
-    peaks = csv_manager.detect_peaks(kind='rotation', top_n = 5, threshold=1.5, plot=True)
+    peaks = csv_manager.detect_peaks(kind='acceleration', top_n = 2, plot=True)
+    print(f"Peak times: {peaks}")
