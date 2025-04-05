@@ -1,2 +1,4 @@
 pyudev
 ffmpeg-python
+pandas
+moviepy==1.0.3

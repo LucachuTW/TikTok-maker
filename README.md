@@ -137,6 +137,7 @@ The `config.yaml` file centralizes key settings:
 * **FFmpeg:** Command-line tool (accessible via PATH).
 * **Gyroflow:** Command-line tool (accessible via PATH or located correctly).
 * **sudo:** Required for mount/unmount operations.
+* **libc++1** Required to use gyroflow
 
 ### 6.2. Python Libraries
 These can be installed using pip:
