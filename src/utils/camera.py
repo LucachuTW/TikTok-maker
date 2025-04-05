@@ -3,7 +3,7 @@ import pyudev
 import os
 import subprocess
 from utils.config_manager import ConfigManager
-from logger.logger_config import Logger
+from logger.logger_manager import Logger
 import shutil
 import time
 
@@ -42,23 +42,39 @@ class Camera:
                     logger.info(f"  Serial: {self.serial}")
                     break
 
+
     def mount(self, mount_path=None):
         if mount_path is None:
             mount_path = os.path.expanduser("~/camera_mount")
         
-        partition = self.device_node + "1"
         self.mount_point = mount_path
-
         os.makedirs(mount_path, exist_ok=True)
 
-        try:
-            subprocess.run(
-                ["sudo", "mount", partition, mount_path],
-                check=True
-            )
-            logger.info(f"Camera mounted at {mount_path}")
-        except subprocess.CalledProcessError:
-            logger.error(f"Failed to mount {partition} at {mount_path}")
+        # Encuentra particiones hijas de este dispositivo
+        context = pyudev.Context()
+        device = pyudev.Device.from_device_file(context, self.device_node)
+        partitions = [
+            dev.device_node
+            for dev in device.children
+            if dev.subsystem == 'block' and dev.device_type == 'partition'
+        ]
+
+        if not partitions:
+            logger.error(f"No partitions found for device {self.device_node}")
+            return
+
+        for partition in partitions:
+            try:
+                subprocess.run(
+                    ["sudo", "mount", partition, mount_path],
+                    check=True
+                )
+                logger.info(f"Camera mounted at {mount_path} using partition {partition}")
+                return  # exit after first successful mount
+            except subprocess.CalledProcessError:
+                logger.warning(f"Failed to mount {partition}, trying next...")
+
+        logger.error(f"All mount attempts failed for {self.device_node}")
 
     def unmount(self):
         if not hasattr(self, 'mount_point'):
