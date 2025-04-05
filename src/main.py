@@ -1,8 +1,9 @@
 """Executable module for connecting all modules"""
+import os
 from utils.config_manager import ConfigManager
 from utils.camera import Camera
 from utils.extract_audio_wav import extract_audio_ffmpeg
-import os
+from utils.edit_video import clip
 
 config = ConfigManager()
 
@@ -46,45 +47,32 @@ def extract_audio(files):
         os.makedirs(audio_dir, exist_ok=True)
 
         output_path = os.path.join(audio_dir, f"{video_name}.wav")
+
+        if os.path.exists(output_path):
+            print(f"  Skipping {output_path} (already exists)")
+            continue
+
         extract_audio_ffmpeg(full_path, output_path)
-
-
-def clip(files):
-    print("✂️ Clipping the following files:")
-    for full_path in files:
-        print(f" - {full_path}")
-
-        video_name = os.path.splitext(os.path.basename(full_path))[0]
-        video_dir = os.path.dirname(full_path)
-
-        clips_dir = os.path.join(video_dir, "clips")
-        os.makedirs(clips_dir, exist_ok=True)
-
-        print(f"  → Would save clips into: {clips_dir}")
-
 
 if __name__ == "__main__":
     while True:
-        camera = Camera()
-        camera.mount()
-        print(camera.model)
-        camera.download(config.config.get("camera_path", None))
-        camera.unmount()
-        print("📤 Camera unmounted.")
+#        camera = Camera()
+#        camera.mount()
+#        print(camera.model)
+#        camera.download(config.config.get("camera_path", None))
+#        camera.unmount()
+#        print("📤 Camera unmounted.")
 
         base_path = config.config.get("camera_path", "")
         downloaded_videos = list_videos(base_path)
 
-        # 1. Extraer audio automáticamente
         print("\n🔉 Automatically extracting audio from downloaded videos...")
         extract_audio(downloaded_videos)
 
-        # 2. Estabilización
         print("\n🎥 Available videos:")
         videos_to_stabilize = choose_files(downloaded_videos, "Select videos to stabilize:")
         stabilized_videos = stabilish(videos_to_stabilize)
 
-        # 3. Clipping
         all_videos_after_stab = list_videos(base_path)
         print("\n📼 Videos available for clipping:")
         videos_to_clip = choose_files(all_videos_after_stab, "Select videos to clip:")

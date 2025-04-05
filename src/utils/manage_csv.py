@@ -1,4 +1,4 @@
-from config_manager import ConfigManager
+from utils.config_manager import ConfigManager
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
