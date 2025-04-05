@@ -11,3 +11,4 @@ if __name__ == "__main__":
         print(camera.model)
         camera.download(config.config.get("path", None)[0])
         camera.unmount()
+        print("Unmounted")

@@ -3,10 +3,12 @@ import pyudev
 import os
 import subprocess
 from utils.config_manager import ConfigManager
+from logger.logger_config import Logger
 import shutil
+import time
 
 config = ConfigManager()
-
+logger = Logger(logger_name='CameraLogger')
 class Camera:
     def __init__(self):
         self.vendor = None
@@ -22,7 +24,7 @@ class Camera:
 
         known_models = config.config.get("cameras", [])
 
-        print(f"Waiting for USB camera. Known models: {known_models}")
+        logger.info(f"Waiting for USB camera. Known models: {known_models}")
 
         for device in iter(monitor.poll, None):
             if device.action == 'add' and device.get('ID_USB_DRIVER') == 'usb-storage':
@@ -33,11 +35,11 @@ class Camera:
                     self.device_node = device.device_node
                     self.serial = device.get('ID_SERIAL_SHORT') or device.get('ID_SERIAL', 'Unknown')
 
-                    print(f"Camera detected:")
-                    print(f"  Vendor: {self.vendor}")
-                    print(f"  Model: {self.model}")
-                    print(f"  Device node: {self.device_node}")
-                    print(f"  Serial: {self.serial}")
+                    logger.info(f"Camera detected:")
+                    logger.info(f"  Vendor: {self.vendor}")
+                    logger.info(f"  Model: {self.model}")
+                    logger.info(f"  Device node: {self.device_node}")
+                    logger.info(f"  Serial: {self.serial}")
                     break
 
     def mount(self, mount_path=None):
@@ -54,24 +56,46 @@ class Camera:
                 ["sudo", "mount", partition, mount_path],
                 check=True
             )
-            print(f"Camera mounted at {mount_path}")
+            logger.info(f"Camera mounted at {mount_path}")
         except subprocess.CalledProcessError:
-            print(f"Failed to mount {partition} at {mount_path}")
+            logger.error(f"Failed to mount {partition} at {mount_path}")
 
     def unmount(self):
-        if hasattr(self, 'mount_point'):
-            try:
-                subprocess.run(
-                    ["umount", self.mount_point],
-                    check=True
-                )
-                print(f"Camera unmounted from {self.mount_point}")
-                # Clean up the mount point
-                os.rmdir(self.mount_point)
-            except subprocess.CalledProcessError:
-                print(f"Failed to unmount {self.mount_point}")
-        else:
-            print("No mount point to unmount.")
+        if not hasattr(self, 'mount_point'):
+            logger.warning("No mount point to unmount.")
+            return
+
+        try:
+            # Intenta desmontar con la opción -l (lazy unmount)
+            subprocess.run(
+                ["sudo", "umount", "-l", self.mount_point],
+                check=True
+            )
+            logger.info(f"Camera unmounted from {self.mount_point}")
+
+            # Espera activa hasta que el sistema libere el punto de montaje
+            timeout = 5  # segundos
+            start = time.time()
+            while time.time() - start < timeout:
+                if not os.path.ismount(self.mount_point):
+                    logger.info(f"Mount point {self.mount_point} is no longer a mount point.")
+                    break
+                time.sleep(0.5)
+
+            # Verifica si el directorio aún existe y está accesible
+            if os.path.exists(self.mount_point):
+                try:
+                    os.listdir(self.mount_point)  # Forzar acceso
+                    shutil.rmtree(self.mount_point)
+                    logger.info(f"Mount point {self.mount_point} removed")
+                except Exception as e:
+                    logger.error(f"Error removing mount point {self.mount_point}: {e}")
+            else:
+                logger.warning(f"Mount point {self.mount_point} no longer exists.")
+        except subprocess.CalledProcessError:
+            logger.error(f"Failed to unmount {self.mount_point}")
+        except Exception as e:
+            logger.error(f"Unexpected error during unmount: {e}")
 
     def download(self, base_path):
         """
@@ -79,12 +103,12 @@ class Camera:
         If there are already files in the path, we can use rsync to only download the new files.
         """
         if not hasattr(self, 'mount_point'):
-            print("Camera is not mounted.")
+            logger.warning("Camera is not mounted.")
             return
 
         camara_path = os.path.join(self.mount_point, "DCIM")
         if not os.path.exists(camara_path):
-            print(f"Camera path {camara_path} does not exist.")
+            logger.warning(f"Camera path {camara_path} does not exist.")
             return
         video_exts = ('.mp4', '.mov', '.avi', '.mkv', '.mts')
         gcsv_exts = ('.gcsv',)
@@ -95,9 +119,9 @@ class Camera:
         os.makedirs(video_dest, exist_ok=True)
         os.makedirs(gcsv_dest, exist_ok=True)
 
-        print(f"Copying files from {camara_path} to:")
-        print(f"  - Videos: {video_dest}")
-        print(f"  - GCSV : {gcsv_dest}")
+        logger.info(f"Copying files from {camara_path} to:")
+        logger.info(f"  - Videos: {video_dest}")
+        logger.info(f"  - GCSV : {gcsv_dest}")
 
         for root, _, files in os.walk(camara_path):
             for file in files:
@@ -109,10 +133,13 @@ class Camera:
                 elif lower_file.endswith(gcsv_exts):
                     dst_file = os.path.join(gcsv_dest, file)
                 else:
-                    continue  # ignorar otros archivos
+                    continue  # ignore other files
 
                 if not os.path.exists(dst_file):
-                    shutil.copy2(src_file, dst_file)
-                    print(f"  Copy: {file}")
+                    try:
+                        shutil.copy2(src_file, dst_file)
+                        logger.info(f"  Copy: {file}")
+                    except Exception as e:
+                        logger.error(f"  Error copying {file}: {e}")
                 else:
-                    print(f"  Already exists: {file}")
+                    logger.info(f"  Already exists: {file}")
