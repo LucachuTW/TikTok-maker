@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import ffmpeg  # Import the ffmpeg-python library
+import ffmpeg
 import sys
 import os
 

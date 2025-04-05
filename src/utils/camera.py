@@ -116,7 +116,7 @@ class Camera:
     def download(self, base_path):
         """
         Download the content of the camera to the given path.
-        If there are already files in the path, we can use rsync to only download the new files.
+        Each video (and its associated .gcsv) is saved in its own subfolder.
         """
         if not hasattr(self, 'mount_point'):
             logger.warning("Camera is not mounted.")
@@ -126,36 +126,36 @@ class Camera:
         if not os.path.exists(camara_path):
             logger.warning(f"Camera path {camara_path} does not exist.")
             return
+
         video_exts = ('.mp4', '.mov', '.avi', '.mkv', '.mts')
         gcsv_exts = ('.gcsv',)
 
-        video_dest = os.path.join(base_path, "videos")
-        gcsv_dest = os.path.join(base_path, "gcsv")
+        logger.info(f"Copying files from {camara_path} to individual folders under {base_path}")
 
-        os.makedirs(video_dest, exist_ok=True)
-        os.makedirs(gcsv_dest, exist_ok=True)
+        files_by_base = {}
 
-        logger.info(f"Copying files from {camara_path} to:")
-        logger.info(f"  - Videos: {video_dest}")
-        logger.info(f"  - GCSV : {gcsv_dest}")
-
+        # First pass: group files by base name (without extension)
         for root, _, files in os.walk(camara_path):
             for file in files:
-                src_file = os.path.join(root, file)
-                lower_file = file.lower()
+                name, ext = os.path.splitext(file)
+                ext = ext.lower()
+                if ext in video_exts or ext in gcsv_exts:
+                    files_by_base.setdefault(name, []).append(os.path.join(root, file))
 
-                if lower_file.endswith(video_exts):
-                    dst_file = os.path.join(video_dest, file)
-                elif lower_file.endswith(gcsv_exts):
-                    dst_file = os.path.join(gcsv_dest, file)
-                else:
-                    continue  # ignore other files
+        # Now for each base, create a subfolder and copy files in
+        for base_name, file_paths in files_by_base.items():
+            dest_dir = os.path.join(base_path, base_name)
+            os.makedirs(dest_dir, exist_ok=True)
+
+            for src in file_paths:
+                filename = os.path.basename(src)
+                dst_file = os.path.join(dest_dir, filename)
 
                 if not os.path.exists(dst_file):
                     try:
-                        shutil.copy2(src_file, dst_file)
-                        logger.info(f"  Copy: {file}")
+                        shutil.copy2(src, dst_file)
+                        logger.info(f"  Copied {filename} to {dest_dir}")
                     except Exception as e:
-                        logger.error(f"  Error copying {file}: {e}")
+                        logger.error(f"  Error copying {filename} to {dest_dir}: {e}")
                 else:
-                    logger.info(f"  Already exists: {file}")
+                    logger.info(f"  Skipped (already exists): {filename} in {dest_dir}")

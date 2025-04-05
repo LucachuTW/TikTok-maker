@@ -6,8 +6,14 @@ import os
 
 config = ConfigManager()
 
-def list_videos(path):
-    return [f for f in os.listdir(path) if f.lower().endswith(('.mp4', '.mov', '.avi'))]
+def list_videos(base_path):
+    """Recursively find all video files inside subfolders."""
+    found = []
+    for root, _, files in os.walk(base_path):
+        for f in files:
+            if f.lower().endswith(('.mp4', '.mov', '.avi')):
+                found.append(os.path.join(root, f))
+    return found
 
 def choose_files(files, prompt="Select files (comma-separated indices):"):
     if not files:
@@ -21,32 +27,41 @@ def choose_files(files, prompt="Select files (comma-separated indices):"):
     indices = [int(i.strip()) for i in selected.split(",") if i.strip().isdigit()]
     return [files[i] for i in indices if 0 <= i < len(files)]
 
-def stabilish(files, input_dir):
+def stabilish(files):
     print("⚙️ Stabilizing the following files:")
     for f in files:
-        pass
+        print(f" - {f}")
+        # TODO: Implement stabilization logic
+    return []  # Replace with list of stabilized video paths if applicable
 
-def clip(files, input_dir):
-    print("✂️ Clipping the following files:")
-    for f in files:
-        pass
-
-
-def extract_audio(files, input_dir):
+def extract_audio(files):
     print("🔉 Extracting audio from the following files:")
-    for f in files:
-        full_path = os.path.join(input_dir, f)
+    for full_path in files:
+        print(f" - {full_path}")
 
-        parent_dir = os.path.dirname(full_path)
-        grandparent_dir = os.path.dirname(parent_dir)
+        video_name = os.path.splitext(os.path.basename(full_path))[0]
+        video_dir = os.path.dirname(full_path)
 
-        audio_dir = os.path.join(grandparent_dir, "audio")
+        audio_dir = os.path.join(video_dir, "audio")
         os.makedirs(audio_dir, exist_ok=True)
 
-        # Ruta de salida
-        output_path = os.path.join(audio_dir, os.path.splitext(f)[0] + ".wav")
-
+        output_path = os.path.join(audio_dir, f"{video_name}.wav")
         extract_audio_ffmpeg(full_path, output_path)
+
+
+def clip(files):
+    print("✂️ Clipping the following files:")
+    for full_path in files:
+        print(f" - {full_path}")
+
+        video_name = os.path.splitext(os.path.basename(full_path))[0]
+        video_dir = os.path.dirname(full_path)
+
+        clips_dir = os.path.join(video_dir, "clips")
+        os.makedirs(clips_dir, exist_ok=True)
+
+        print(f"  → Would save clips into: {clips_dir}")
+
 
 if __name__ == "__main__":
     while True:
@@ -57,30 +72,22 @@ if __name__ == "__main__":
         camera.unmount()
         print("📤 Camera unmounted.")
 
-        video_dir = os.path.join(config.config.get("camera_path", ""), "videos")
-        all_videos = list_videos(video_dir)
+        base_path = config.config.get("camera_path", "")
+        downloaded_videos = list_videos(base_path)
 
+        # 1. Extraer audio automáticamente
+        print("\n🔉 Automatically extracting audio from downloaded videos...")
+        extract_audio(downloaded_videos)
+
+        # 2. Estabilización
         print("\n🎥 Available videos:")
-        videos_to_stabilize = choose_files(all_videos, "Select videos to stabilize:")
+        videos_to_stabilize = choose_files(downloaded_videos, "Select videos to stabilize:")
+        stabilized_videos = stabilish(videos_to_stabilize)
 
-        # 2. Stabilize selected videos
-        stabilized_videos = stabilish(videos_to_stabilize, video_dir)
-
-        # 3. List videos again for clipping
-        all_videos_after_stab = list_videos(video_dir)
-
+        # 3. Clipping
+        all_videos_after_stab = list_videos(base_path)
         print("\n📼 Videos available for clipping:")
         videos_to_clip = choose_files(all_videos_after_stab, "Select videos to clip:")
+        clip(videos_to_clip)
 
-        # 4. Clip selected
-        clip(videos_to_clip, video_dir)
-
-        # 5. List videos again for audio extraction
-        all_videos_after_clip = list_videos(video_dir)
-
-        print("\n🔊 Videos available for audio extraction:")
-        videos_for_audio = choose_files(all_videos_after_clip, "Select videos to extract audio from:")
-
-        # 6. Extract audio
-        extract_audio(videos_for_audio, video_dir)
-
+        print("\n🔁 Restarting loop...\n")
