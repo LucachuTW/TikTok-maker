@@ -8,7 +8,7 @@ class ConfigManager:
         self.config = None
         self._ensure_config_exists()
         self._load_config()
-        self._fix_paths()
+        self._fix_placeholders()
 
     def _ensure_config_exists(self):
         base_dir = os.path.dirname(os.path.dirname(__file__))
@@ -20,10 +20,14 @@ class ConfigManager:
         if not os.path.isfile(absolute_path):
             default_config = {
                 "camera_path": "/home/[user]/camera_mount",
+                "logs": {
+                    "path": "/home/[user]/logs/app.log",
+                    "sqlite_file": "/home/[user]/logs/logs.db"
+                },
                 "cameras": ["Wasintek_camera"]
             }
             with open(absolute_path, 'w') as file:
-                yaml.dump(default_config, file)
+                yaml.dump(default_config, file, default_flow_style=False)
 
     def _load_config(self):
         base_dir = os.path.dirname(os.path.dirname(__file__))
@@ -31,12 +35,16 @@ class ConfigManager:
         with open(absolute_path, 'r') as file:
             self.config = yaml.safe_load(file)
 
-    def _fix_paths(self):
-        original_path = self.config.get('camera_path', [None])[0]
-        if not original_path:
-            return
+    def _fix_placeholders(self):
+        user = getpass.getuser()
 
-        if "[user]" in original_path:
-            user = getpass.getuser()
-            replaced_path = original_path.replace("[user]", user)
-            self.config["camera_path"][0] = replaced_path
+        def replace_placeholders(value):
+            if isinstance(value, str):
+                return value.replace("[user]", user)
+            elif isinstance(value, list):
+                return [replace_placeholders(v) for v in value]
+            elif isinstance(value, dict):
+                return {k: replace_placeholders(v) for k, v in value.items()}
+            return value
+
+        self.config = replace_placeholders(self.config)

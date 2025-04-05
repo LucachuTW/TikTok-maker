@@ -1,53 +1,52 @@
-# logger_config.py
 import logging
 import sys
-import os # Required for the SQLite handler
+import os
+import getpass
 from logging.handlers import RotatingFileHandler
-from logger.sqlite_handler import SQLiteHandler # Import the new handler!
+from logger.sqlite_handler import SQLiteHandler
+from utils.config_manager import ConfigManager
+
+config = ConfigManager()
 
 class Logger:
     """
     Class to configure and use a standard Python logger.
-
-    Allows logging messages to a file, console, and/or SQLite database.
+    Logs to file, console, and optionally SQLite.
+    Paths are configurable via config.yaml.
     """
     def __init__(self,
                  logger_name='AppLogger',
                  level=logging.INFO,
                  log_to_console=True,
-                 # File configuration
                  log_to_file=True,
-                 log_file='app.log',
-                 max_bytes=10*1024*1024, # 10 MB
+                 max_bytes=10*1024*1024,
                  backup_count=5,
-                 # SQLite configuration
-                 log_to_sqlite=False, # Disabled by default
-                 sqlite_db_file='logs.db'):
-        """
-        Initializes and configures the logger with the specified handlers.
-        """
+                 log_to_sqlite=False):
+
         self.logger_name = logger_name
         self.level = level
 
-        # Get the logger
+        # Load config values for paths
+        log_config = config.config.get("logs", {})
+        user = getpass.getuser()
+
+        log_file = log_config.get("path", f"/home/{user}/logs/app.log").replace("[user]", user)
+        sqlite_db_file = log_config.get("sqlite_file", f"/home/{user}/logs/logs.db").replace("[user]", user)
+
         self.logger = logging.getLogger(self.logger_name)
         self.logger.setLevel(self.level)
 
-        # Avoid adding duplicate handlers
         if not self.logger.handlers:
-            # Create standard formatter
             formatter = logging.Formatter(
                 '%(asctime)s - %(name)s:%(lineno)d - %(levelname)s - %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S'
             )
 
-            # --- File Handler (Rotating) ---
+            # --- File Handler ---
             if log_to_file:
                 try:
-                    # Ensure the log directory exists
                     log_dir = os.path.dirname(os.path.abspath(log_file))
-                    if log_dir and not os.path.exists(log_dir):
-                        os.makedirs(log_dir, exist_ok=True)
+                    os.makedirs(log_dir, exist_ok=True)
 
                     file_handler = RotatingFileHandler(
                         log_file,
@@ -73,23 +72,17 @@ class Logger:
                 try:
                     sqlite_handler = SQLiteHandler(db_file=sqlite_db_file)
                     sqlite_handler.setLevel(self.level)
-                    # It doesn't need the same text formatter, but we assign it just in case
                     sqlite_handler.setFormatter(formatter)
                     self.logger.addHandler(sqlite_handler)
-                    self.logger.info(f"Logging to SQLite DB '{sqlite_db_file}' activated.", extra={'event_type':'LOG_INIT'})
+                    self.logger.info(f"Logging to SQLite DB '{sqlite_db_file}' activated.", extra={'event_type': 'LOG_INIT'})
                 except Exception as e:
-                    # The specific error is already printed within SQLiteHandler
                     print(f"Could not activate SQLite logging: {e}", file=sys.stderr)
 
-
-            # If no handler was configured
             if not self.logger.handlers:
-                 self.logger.addHandler(logging.NullHandler())
-                 print(f"Warning: Logger '{self.logger_name}' configured without active handlers.", file=sys.stderr)
+                self.logger.addHandler(logging.NullHandler())
+                print(f"Warning: Logger '{self.logger_name}' configured without active handlers.", file=sys.stderr)
 
-    # --- Methods for logging messages ---
-    # Modify methods to easily accept 'extra'
-
+    # --- Wrapper methods ---
     def debug(self, message, extra=None):
         self.logger.debug(message, extra=extra)
 
@@ -106,6 +99,4 @@ class Logger:
         self.logger.critical(message, extra=extra)
 
     def exception(self, message, extra=None):
-        # Exception already includes exc_info=True by default
         self.logger.exception(message, extra=extra)
-

@@ -1,3 +1,6 @@
 cameras:
 - Wasintek_camera
 camera_path: /home/[user]/camera_mount
+logs:
+  path: /home/[user]/logs/app.log
+  sqlite_file: /home/[user]/logs/logs.db
