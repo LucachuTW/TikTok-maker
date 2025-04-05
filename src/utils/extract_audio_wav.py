@@ -3,7 +3,7 @@ import ffmpeg  # Import the ffmpeg-python library
 import sys
 import os
 
-def extract_audio_ffmpeg_python(input_video_path, output_audio_path):
+def extract_audio_ffmpeg(input_video_path, output_audio_path):
     """
     Extracts the audio stream from a video file to WAV format using ffmpeg-python.
 
