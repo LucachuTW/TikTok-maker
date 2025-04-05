@@ -1,6 +1,6 @@
 cameras:
 - 00.00.01
-camera_path: /home/[user]/camera_mount
+camera_path: /home/[user]/camera
 logs:
   path: /home/[user]/logs/app.log
   sqlite_file: /home/[user]/logs/logs.db
