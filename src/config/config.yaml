@@ -4,3 +4,6 @@ cameras:
   - Logitech C920
   - Sony Alpha 7C
   - Canon EOS R6
+
+path:
+  - /home/[user]/Camera
