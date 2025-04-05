@@ -1,6 +1,6 @@
 
-camaras:
-  - GoPro Hero 9
+cameras:
+  - Wasintek_camera
   - Logitech C920
   - Sony Alpha 7C
   - Canon EOS R6
