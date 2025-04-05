@@ -1,5 +1,8 @@
 """Utils focused on detecting and connecting to the camera"""
+import os
 import pyudev
+import yaml
+
 
 def detect_cam():
     context = pyudev.Context()
