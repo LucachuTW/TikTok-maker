@@ -9,6 +9,7 @@ class Camera:
         self.vendor = None
         self.model = None
         self.device_node = None
+        self.serial = None
         self._wait_for_camera()
 
     def _wait_for_camera(self):
@@ -27,5 +28,11 @@ class Camera:
                     self.vendor = device.get('ID_VENDOR', 'Unknown')
                     self.model = model
                     self.device_node = device.device_node
-                    print(f"Camera detected: {self.vendor} {self.model}")
+                    self.serial = device.get('ID_SERIAL_SHORT') or device.get('ID_SERIAL', 'Unknown')
+
+                    print(f"Camera detected:")
+                    print(f"  Vendor: {self.vendor}")
+                    print(f"  Model: {self.model}")
+                    print(f"  Device node: {self.device_node}")
+                    print(f"  Serial: {self.serial}")
                     break
