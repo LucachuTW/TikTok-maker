@@ -1,5 +1,6 @@
 import os
 import yaml
+import getpass
 
 class ConfigManager:
     def __init__(self, path="config/config.yaml"):
@@ -14,7 +15,7 @@ class ConfigManager:
         with open(absolute_path, 'r') as file:
             self.config = yaml.safe_load(file)
 
-    def _extract_path(self):
+    def _fix_paths(self):
         original_path = self.config.get('path', [None])[0]
         if not original_path:
             return
