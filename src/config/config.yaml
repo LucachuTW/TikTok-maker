@@ -1,5 +1,5 @@
 cameras:
-- Wasintek_camera
+- 00.00.01
 camera_path: /home/[user]/camera_mount
 logs:
   path: /home/[user]/logs/app.log
