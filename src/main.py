@@ -61,12 +61,12 @@ def extract_audio(files):
 
 if __name__ == "__main__":
     while True:
-#        camera = Camera()
-#        camera.mount()
-#        print(camera.model)
-#        camera.download(config.config.get("camera_path", None))
-#        camera.unmount()
-#        print("📤 Camera unmounted.")
+        camera = Camera()
+        camera.mount()
+        print(camera.model)
+        camera.download(config.config.get("camera_path", None))
+        camera.unmount()
+        print("📤 Camera unmounted.")
 
         base_path = config.config.get("camera_path", "")
         downloaded_videos = list_videos(base_path)

@@ -8,7 +8,7 @@ import shutil
 import time
 
 config = ConfigManager()
-logger = Logger(logger_name='CameraLogger')
+logger = Logger(logger_name='CameraLogger', log_to_file=True, log_to_sqlite=True)
 class Camera:
     def __init__(self):
         self.vendor = None
