@@ -166,6 +166,18 @@ def interpolate_data_for_frames(gcsv_data, fps, frame_count):
 
     return output_data
 
+def interpolate_data_for_frames_from_video_path(video_path, gcsv_path):
+    """Wrapper to read video properties and GCSV data, then interpolate."""
+    fps, frame_count = get_video_properties(video_path)
+    if fps is None or frame_count is None:
+        return None
+
+    gcsv_data = read_and_prepare_gcsv_data(gcsv_path)
+    if gcsv_data is None:
+        return None
+
+    return interpolate_data_for_frames(gcsv_data, fps, frame_count)
+
 # --- Main execution block ---
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

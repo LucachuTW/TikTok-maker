@@ -1,8 +1,10 @@
-from moviepy.editor import VideoFileClip, concatenate_videoclips
+from moviepy.editor import VideoFileClip, concatenate_videoclips, TextClip, CompositeVideoClip, ImageClip
 from utils.manage_csv import CSVManager
 from utils.config_manager import ConfigManager
 import os
 import subprocess
+from gyroflow.interpolate_gcsv import interpolate_data_for_frames_from_video_path
+
 
 def get_interval_clip(peak_times, clip_duration=(0.5, 1.5)):
     clips_duration = []
@@ -27,6 +29,49 @@ def get_interval_clip(peak_times, clip_duration=(0.5, 1.5)):
                 merged_clips.append(clip)
 
     return merged_clips
+
+def overlay_data_on_video(video_path, frame_data):
+    video = VideoFileClip(video_path)
+    fps = video.fps
+
+    def make_frame_with_overlay(get_frame, t):
+        frame = get_frame(t)
+        frame_idx = int(t * fps)
+        if frame_idx >= len(frame_data):
+            return frame
+
+        data = frame_data[frame_idx]
+        text = (
+            f"Time: {data['timestamp_sec']:.2f}s\n"
+            f"Gyro: [{data['gyro_x']:.2f}, {data['gyro_y']:.2f}, {data['gyro_z']:.2f}]\n"
+            f"Accel: [{data['accel_x']:.2f}, {data['accel_y']:.2f}, {data['accel_z']:.2f}]"
+        )
+
+        txt_clip = TextClip(
+            text,
+            fontsize=20,
+            color='white',
+            font='DejaVu-Sans',
+            bg_color='black'
+        ).set_position(("left", "bottom")).set_duration(1.0 / fps)
+
+        composite = CompositeVideoClip([ImageClip(frame).set_duration(1.0 / fps), txt_clip])
+        return composite.get_frame(0)
+
+    print("Rendering video with overlay...")
+
+    base, ext = os.path.splitext(video_path)
+    temp_output_path = f"{base}_with_overlay{ext}"
+
+    new_video = video.fl(make_frame_with_overlay)
+    new_video.write_videofile(temp_output_path, codec="libx264", audio_codec="aac")
+
+    print("Replacing original video...")
+    os.remove(video_path)
+    os.rename(temp_output_path, video_path)
+
+    return video_path
+
 
 def create_highlight_clips(video_path, clips_duration, output_folder, join=False):
     if not os.path.exists(output_folder):
@@ -90,6 +135,12 @@ def clip(files):
         # Buscar el archivo .gcsv con el mismo nombre base
         base_name = os.path.splitext(video_name)[0]
         gcsv_path = os.path.join(video_dir, f"{base_name}.gcsv")
+
+        """
+        # add overlay info:
+        frame_data = interpolate_data_for_frames_from_video_path(full_path, gcsv_path)
+        overlay_data_on_video(full_path, frame_data)
+        """
 
         if not os.path.exists(gcsv_path):
             print(f"  ⚠️  GCSV file not found: {gcsv_path}, skipping.")
