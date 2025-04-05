@@ -36,3 +36,20 @@ class Camera:
                     print(f"  Device node: {self.device_node}")
                     print(f"  Serial: {self.serial}")
                     break
+
+    def mount(self, mount_path="/mnt/camera"):
+            # Guess partition (e.g. /dev/sda1)
+            partition = self.device_node + "1"
+            self.mount_point = mount_path
+
+            # Create mount point if it doesn't exist
+            os.makedirs(mount_path, exist_ok=True)
+
+            try:
+                subprocess.run(
+                    ["mount", partition, mount_path],
+                    check=True
+                )
+                print(f"Camera mounted at {mount_path}")
+            except subprocess.CalledProcessError:
+                print(f"Failed to mount {partition} at {mount_path}")
