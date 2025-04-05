@@ -3,6 +3,7 @@ import os
 from utils.config_manager import ConfigManager
 from utils.camera import Camera
 from utils.extract_audio_wav import extract_audio_ffmpeg
+from gyroflow.run_gyroflow import run_gyroflow
 from utils.edit_video import clip
 
 config = ConfigManager()
@@ -30,10 +31,14 @@ def choose_files(files, prompt="Select files (comma-separated indices):"):
 
 def stabilish(files):
     print("⚙️ Stabilizing the following files:")
+    stabilized = []
+
     for f in files:
         print(f" - {f}")
-        # TODO: Implement stabilization logic
-    return []  # Replace with list of stabilized video paths if applicable
+        run_gyroflow(f)
+        stabilized.append(f)  # Si luego generas una versión `_stab.mp4`, cámbialo aquí
+
+    return stabilized
 
 def extract_audio(files):
     print("🔉 Extracting audio from the following files:")
