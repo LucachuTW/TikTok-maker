@@ -7,8 +7,6 @@ from scipy.signal import find_peaks
 
 config = ConfigManager()
 
-
-
 class CSVManager:
     """
     Class to manage CSV files.
