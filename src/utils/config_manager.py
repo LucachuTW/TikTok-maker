@@ -19,7 +19,7 @@ class ConfigManager:
 
         if not os.path.isfile(absolute_path):
             default_config = {
-                "path": ["/home/[user]/camera_mount"],
+                "camera_path": "/home/[user]/camera_mount",
                 "cameras": ["Wasintek_camera"]
             }
             with open(absolute_path, 'w') as file:
@@ -32,11 +32,11 @@ class ConfigManager:
             self.config = yaml.safe_load(file)
 
     def _fix_paths(self):
-        original_path = self.config.get('path', [None])[0]
+        original_path = self.config.get('camera_path', [None])[0]
         if not original_path:
             return
 
         if "[user]" in original_path:
             user = getpass.getuser()
             replaced_path = original_path.replace("[user]", user)
-            self.config["path"][0] = replaced_path
+            self.config["camera_path"][0] = replaced_path

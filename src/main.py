@@ -9,6 +9,6 @@ if __name__ == "__main__":
         camera = Camera()
         camera.mount()
         print(camera.model)
-        camera.download(config.config.get("path", None)[0])
+        camera.download(config.config.get("camera_path", None))
         camera.unmount()
         print("Unmounted")

@@ -1,9 +1,3 @@
-
 cameras:
-  - Wasintek_camera
-  - Logitech C920
-  - Sony Alpha 7C
-  - Canon EOS R6
-
-path:
-  - /home/[user]/Camera
+- Wasintek_camera
+camera_path: /home/[user]/camera_mount
